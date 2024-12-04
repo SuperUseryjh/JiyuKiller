@@ -1,4 +1,4 @@
-name: C++ Build and Upload Artifacts
+name: C++ Build 和 Upload Artifacts
 
 on:
   push:
@@ -24,9 +24,33 @@ jobs:
         run: |
           g++ -o my_program.exe main.cpp  # 使用 g++ 编译 Windows 系统
 
+        
       # 步骤 4: 上传构建产物
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: my_program-windows  # 使用 Windows 为产物命名
           path: my_program.exe  # 仅上传 Windows 的可执行文件
+
+      # 步骤 5: 将编译后的文件提交到指定分支
+      - name: Commit and push build artifact
+        run: |
+          # 配置 Git 用户信息
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          # 创建一个新的分支（如果没有的话）
+          git checkout -b build-artifacts
+
+          # 将编译后的文件添加到 git
+          git add my_program.exe
+
+          # 提交更改
+          git commit -m "Add compiled program"
+
+          # 推送到指定的分支（这里是 build-artifacts）
+          git push origin build-artifacts --force
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 自动提供 GitHub token
+
