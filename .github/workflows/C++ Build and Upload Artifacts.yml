@@ -1,4 +1,4 @@
-name: C++ Build and Upload Artifacts
+name: C++ Build 和 Upload Artifacts
 
 on:
   push:
