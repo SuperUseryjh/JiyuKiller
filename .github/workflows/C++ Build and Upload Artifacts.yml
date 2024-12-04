@@ -1,0 +1,32 @@
+name: C++ Build and Upload Artifacts
+
+on:
+  push:
+    branches:
+      - main  # 当推送到主分支时触发构建
+
+jobs:
+  build:
+    runs-on: windows-latest  # 只在 Windows 环境下构建
+
+    steps:
+      # 步骤 1: 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # 步骤 2: 设置编译环境
+      - name: Set up build environment
+        run: |
+          choco install mingw  # 安装 MinGW 编译器
+
+      # 步骤 3: 编译 C++ 程序
+      - name: Compile C++ code
+        run: |
+          g++ -o my_program.exe main.cpp  # 使用 g++ 编译 Windows 系统
+
+      # 步骤 4: 上传构建产物
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my_program-windows  # 使用 Windows 为产物命名
+          path: my_program.exe  # 仅上传 Windows 的可执行文件
