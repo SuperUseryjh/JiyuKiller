@@ -1,20 +1,13 @@
-name: C++ Build 和 Upload Artifacts
+name: C++ Build and Upload Artifacts
 
 on:
   push:
     branches:
       - main  # 当推送到主分支时触发构建
-  pull_request:
-    branches:
-      - main  # 当创建针对主分支的拉取请求时触发构建
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 默认的操作系统环境
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # 使用矩阵在多个操作系统上运行构建
+    runs-on: windows-latest  # 只在 Windows 环境下构建
 
     steps:
       # 步骤 1: 检出代码
@@ -24,30 +17,16 @@ jobs:
       # 步骤 2: 设置编译环境
       - name: Set up build environment
         run: |
-          if [[ $RUNNER_OS == 'Linux' ]]; then
-            sudo apt-get update && sudo apt-get install -y build-essential
-          elif [[ $RUNNER_OS == 'Windows' ]]; then
-            choco install mingw
-          elif [[ $RUNNER_OS == 'macOS' ]]; then
-            brew install gcc
-          fi
+          choco install mingw  # 安装 MinGW 编译器
 
       # 步骤 3: 编译 C++ 程序
       - name: Compile C++ code
         run: |
-          if [[ $RUNNER_OS == 'Linux' ]]; then
-            g++ -o my_program main.cpp  # 使用 g++ 编译 Ubuntu 系统
-          elif [[ $RUNNER_OS == 'Windows' ]]; then
-            g++ -o my_program.exe main.cpp  # 使用 g++ 编译 Windows 系统
-          elif [[ $RUNNER_OS == 'macOS' ]]; then
-            g++ -o my_program main.cpp  # 使用 g++ 编译 macOS 系统
-          fi
+          g++ -o my_program.exe main.cpp  # 使用 g++ 编译 Windows 系统
 
       # 步骤 4: 上传构建产物
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my_program-${{ matrix.os }}  # 使用操作系统名称为产物命名
-          path: |
-            my_program  # 对于 Linux 和 macOS
-            my_program.exe  # 对于 Windows
+          name: my_program-windows  # 使用 Windows 为产物命名
+          path: my_program.exe  # 仅上传 Windows 的可执行文件
