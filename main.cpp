@@ -43,8 +43,8 @@ int main() {
 		if (isProcessRunning(processName)) {
 			printf("[%04d:%02d:%02d %02d:%02d:%02d INFO] 检测到极域进程，已尝试使用ntsd关闭\n", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
 			system("ntsd.exe -c q -pn StudentMain.exe");
-			Sleep(100);
-	    }else{
+			Sleep(500);
+	    	}else{
 			printf("[%04d:%02d:%02d %02d:%02d:%02d WARN] 未检测到极域进程\n", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
 			Sleep(500);
 		} 
