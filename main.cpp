@@ -117,6 +117,19 @@ bool isProcessRunning(const std::wstring& processName) {
 }
 
 int main() {
+
+	if(!(access("ntsd.exe", F_OK) == 0)){
+        printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0c);
+		printf("ERR");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+		printf("] 未发现ntsd，无法运行程序\n");
+		printf("请将ntsd重命名为ntsd.exe并放于编译后的可执行文件所在的文件夹内\n");
+		printf("如果没有ntsd，请在此链接下载：https://pan.huang1111.cn/s/A6ooESB\n");
+        system("pause");
+        exit(1);
+    }
+
 	HWND hWnd = GetForegroundWindow();
 	
 	time_t nowtime;
@@ -126,11 +139,19 @@ int main() {
 		tm *p = localtime(&nowtime);
 		wstring processName = L"StudentMain.exe";
 		if (isProcessRunning(processName)) {
-			printf("[%04d:%02d:%02d %02d:%02d:%02d INFO] 检测到极域进程，已尝试使用ntsd关闭\n", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+			printf("INFO");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+			printf("] 检测到极域进程，已尝试使用ntsd关闭\n");
 			system("ntsd.exe -c q -pn StudentMain.exe");
 			Sleep(500);
 	    }else{
-			printf("[%04d:%02d:%02d %02d:%02d:%02d WARN] 未检测到极域进程\n", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0e);
+			printf("WARN");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+			printf("] 未检测到极域进程\n");
 			Sleep(500);
 		} 
 	}
