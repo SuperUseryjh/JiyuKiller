@@ -1,4 +1,4 @@
-name: C++ Build and Upload Artifacts
+name: C++ Build 和 Upload Artifacts
 
 on:
   push:
@@ -24,9 +24,12 @@ jobs:
         run: |
           g++ -o my_program.exe main.cpp  # 使用 g++ 编译 Windows 系统
 
+        
       # 步骤 4: 上传构建产物
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: my_program-windows  # 使用 Windows 为产物命名
           path: my_program.exe  # 仅上传 Windows 的可执行文件
+
+
