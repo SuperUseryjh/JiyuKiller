@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <io.h>
 #include <windows.h>
 #include <tlhelp32.h>
 #include <iostream>
@@ -39,8 +40,13 @@ bool isProcessRunning(const std::wstring& processName) {
 }
 
 int main() {
+	HWND hWnd = GetForegroundWindow();
+	
+	time_t nowtime;
 
-	if(!(access("ntsd.exe", F_OK) == 0)){
+	if(!(_access("ntsd.exe", 00) == 0)){
+		time(&nowtime);
+		tm *p = localtime(&nowtime);
         printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0c);
 		printf("ERR");
@@ -52,9 +58,6 @@ int main() {
         exit(1);
     }
 
-	HWND hWnd = GetForegroundWindow();
-	
-	time_t nowtime;
 	while(1 == 1){
 		TopWindow(hWnd);
 		time(&nowtime);
