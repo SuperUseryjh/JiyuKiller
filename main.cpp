@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <io.h>
+#include <fstream>
 #include <windows.h>
 #include <tlhelp32.h>
 #include <iostream>
@@ -39,10 +40,59 @@ bool isProcessRunning(const std::wstring& processName) {
     return false;
 }
 
+void kill_as_ntsd(tm *p){
+	printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+	printf("INFO");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+	printf("] 检测到极域进程，已尝试使用ntsd关闭\n");
+	system("ntsd.exe -c q -pn StudentMain.exe");
+}
+
+void kill_as_taskkill(tm *p){
+	printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+	printf("INFO");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+	printf("] 检测到极域进程，已尝试使用taskkill关闭\n");
+	system("ntsd.exe -c q -pn StudentMain.exe");
+}
+
 int main() {
 	HWND hWnd = GetForegroundWindow();
 	
 	time_t nowtime;
+
+	if(!(_access(".config", 00) == 0)){
+		time(&nowtime);
+		tm *p = localtime(&nowtime);
+        printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0e);
+		printf("WARN");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+		printf("] 未发现配置文件，已尝试创建配置文件\n");
+		ofstream config(".config");
+		if(!config.is_open()) {
+			time(&nowtime);
+			tm *p = localtime(&nowtime);
+			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0c);
+			printf("ERR");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+			printf("] 未发现配置文件且创建配置文件失败，无法运行程序\n");
+		}else{
+			config << 0;
+			config.close();
+			time(&nowtime);
+			tm *p = localtime(&nowtime);
+			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+			printf("INFO");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+			printf("] 配置文件创建成功\n");
+		}
+        exit(1);
+	}
 
 	if(!(_access("ntsd.exe", 00) == 0)){
 		time(&nowtime);
@@ -53,10 +103,13 @@ int main() {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
 		printf("] 未发现ntsd，无法运行程序\n");
 		printf("请将ntsd重命名为ntsd.exe并放于编译后的可执行文件所在的文件夹内\n");
-		printf("如果没有ntsd，请在此链接下载：https://pan.huang1111.cn/s/A6ooESB\n");
         system("pause");
         exit(1);
     }
+
+	bool type;
+	ifstream configInupt(".config");
+	configInupt >> type;
 
 	while(1 == 1){
 		TopWindow(hWnd);
@@ -64,12 +117,8 @@ int main() {
 		tm *p = localtime(&nowtime);
 		wstring processName = L"StudentMain.exe";
 		if (isProcessRunning(processName)) {
-			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
-			printf("INFO");
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
-			printf("] 检测到极域进程，已尝试使用ntsd关闭\n");
-			system("ntsd.exe -c q -pn StudentMain.exe");
+			if(!type) kill_as_ntsd(p);
+			else kill_as_taskkill(p);
 			Sleep(500);
 	    }else{
 			printf("[%04d:%02d:%02d %02d:%02d:%02d ", p->tm_year + 1900, p -> tm_mon + 1, p -> tm_mday, p -> tm_hour, p -> tm_min, p -> tm_sec);
